@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"golang.org/x/net/html"
 )
@@ -15,32 +17,26 @@ func main() {
 		return
 	}
 
-	url := os.Args[1]
+	url := strings.Trim(os.Args[1], "\n")
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	defer resp.Body.Close()
-	var f func(*html.Node)
-	f = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "a" {
-			for _, a := range n.Attr {
-				if a.Key == "href" {
-					fmt.Println(a.Val)
-					return
-				}
-			}
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			f(c)
-		}
-	}
+	f := new(TitleFinderImpl)
 	doc, err := html.Parse(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
-	f(doc)
 
-	fmt.Println(url)
+	f.findPageTitle(doc)
+	output := &ScriptFilterOutput{}
+	item := NewScriptFilterItem(f.title, "", fmt.Sprintf("[%v](%v)", f.title, url), true)
+	output.addItem(item)
+
+	ec := json.NewEncoder(os.Stdout)
+	if err := ec.Encode(output); err != nil {
+		log.Fatal(err)
+	}
 }
