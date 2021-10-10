@@ -61,7 +61,7 @@
 				<string>Loading ...</string>
 				<key>script</key>
 				<string>url=$(osascript get_url_from_browser.scpt)
-./urlmd $url</string>
+./url2mdlink $url</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
