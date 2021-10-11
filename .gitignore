@@ -3,5 +3,9 @@
 !main.go
 !go.mod
 !README.md
-!get_url_from_browser.scpt
+!appscript
+!appscript/frontmost_appname.scpt
+!appscript/url_from_brave.scpt
+!appscript/url_from_chrome.scpt
+!appscript/url_from_safari.scpt
 !info.plist
