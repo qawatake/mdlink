@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -18,7 +19,7 @@ import (
 // 標準入力で HTML のソースを受け取る
 // 標準出力で Script Filter の JSON を出力 (https://www.alfredapp.com/help/workflows/inputs/script-filter/json/)
 func main() {
-	if len(os.Args) != 6 {
+	if len(os.Args) != 5 {
 		log.Fatal("引数の数が不正です")
 		return
 	}
@@ -32,7 +33,7 @@ func main() {
 		runned = float32(i)
 	}
 	clipboard := os.Args[4]
-	htmlSource := strings.NewReader(os.Args[5])
+	htmlSource := bufio.NewReader(os.Stdin)
 
 	output := &ScriptFilterOutput{}
 
