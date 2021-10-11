@@ -1,10 +1,10 @@
-# url2mdlink
+# mdlink
 
 ## ざっくり
 ブラウザがトップに表示しているページに関するマークダウン用のリンクをクリップボードにコピーする.
 
 ## 使い方
-1. Alfred の検索窓に `url2mdlink` と入力する.
+1. Alfred の検索窓に `mdlink` と入力する.
 2. ブラウザがトップに表示しているページのタイトルが表示される.
 3. エンターキーを押すと, 表示されたタイトルとページの URL を含むマークダウン用リンク (e.g., `[Google](https://www.google.com)` がクリップボードにコピーされる.
 
@@ -12,7 +12,7 @@
 
 ## workflow を構成するファイル
 - main.sh: シュルスクリプト. AppleScript と Go の橋渡し的な処理を行う.
-- urlmd: バイナリファイル. この workflow の中心的な役割を持つ. `GOOS=darwin go build` によって生成する.
+- mdlink: バイナリファイル. この workflow の中心的な役割を持つ. `GOOS=darwin go build` によって生成する.
   - main.go
   - entity.go
   - go.mod
