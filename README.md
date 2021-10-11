@@ -16,7 +16,7 @@
 4. エンターキーを押すと, 表示されたタイトルとページの URL を含むマークダウン用リンク (e.g., `[Google](https://www.google.com)` がクリップボードにコピーされる.
 
 ## インストール手順
-1. `https://github.com/qawatake/mdlink/releases/latest` から `mdlink.alfredworkflow` をダウンロード.
+1. https://github.com/qawatake/mdlink/releases/latest から `mdlink.alfredworkflow` をダウンロード.
 2. ダウンロードしたファイルを開けば, Alfred が自動的に workflow を追加してくれる (はず).
 3. Google Chrome あるいは Brave Browser を使用する場合, ↓が必要
   1. ブラウザを起動
