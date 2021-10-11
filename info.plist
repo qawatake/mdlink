@@ -38,7 +38,7 @@
 	<key>createdby</key>
 	<string>qawatake</string>
 	<key>description</key>
-	<string>Generate markdown link from URL</string>
+	<string>Generate markdown link from browser or clipboard</string>
 	<key>disabled</key>
 	<false/>
 	<key>name</key>
@@ -164,7 +164,7 @@
 		</dict>
 	</array>
 	<key>readme</key>
-	<string></string>
+	<string>See https://github.com/qawatake/mdlink</string>
 	<key>uidata</key>
 	<dict>
 		<key>33F85A1D-1BE8-4C01-B6B4-BCACB75904AB</key>
@@ -189,6 +189,10 @@
 			<integer>125</integer>
 		</dict>
 	</dict>
+	<key>variablesdontexport</key>
+	<array/>
+	<key>version</key>
+	<string>1.0.0</string>
 	<key>webaddress</key>
 	<string>https://github.com/qawatake/mdlink</string>
 </dict>
