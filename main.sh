@@ -1,14 +1,14 @@
 #!/bin/bash
 BRAVE="Brave Browser"
 CHROME="Google Chrome"
-SAFARI="SAFARI"
-front_app=$(osascript appscript/get_frontmost_appname.scpt)
+SAFARI="Safari"
+front_app=$(osascript appscript/frontmost_appname.scpt)
 
 # if [ "$front_app" = "Brave Browser.app" ]; then
 if [ "$front_app" = "$BRAVE"".app" ]; then
   source=$BRAVE
 	url=$(osascript appscript/url_from_brave.scpt)
-	html=$(osascript appscripthtml_from_brave.scpt)
+	html=$(osascript appscript/html_from_brave.scpt)
 fi
 if [ "$front_app" = "$CHROME"".app" ]; then
   source=$CHROME
