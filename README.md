@@ -1,11 +1,11 @@
 # url2mdlink
 
 ## ざっくり
-Brave Browser がトップに表示しているページに関するマークダウン用のリンクをクリップボードにコピーする.
+ブラウザがトップに表示しているページに関するマークダウン用のリンクをクリップボードにコピーする.
 
 ## 使い方
 1. Alfred の検索窓に `url2mdlink` と入力する.
-2. Brave Browser がトップに表示しているページのタイトルが表示される.
+2. ブラウザがトップに表示しているページのタイトルが表示される.
 3. エンターキーを押すと, 表示されたタイトルとページの URL を含むマークダウン用リンク (e.g., `[Google](https://www.google.com)` がクリップボードにコピーされる.
 
 ## インストール手順
@@ -15,5 +15,6 @@ Brave Browser がトップに表示しているページに関するマークダ
   - main.go
   - entity.go
   - go.mod
-- get_url_from_browser.scpt: Apple Script. Brave Browser から現在開いているページの URL を取得し, 標準出力に吐き出す.
+- appscript/url_from_*.scpt: AppleScript. ブラウザから現在開いているページの URL を取得し, 標準出力に吐き出す.
+- appscript/frontmost_appname.scpt: AppleScript. 最前面にあるアプリ名を取得し, 標準出力に吐き出す.
 - info.plist: XML ファイル. Alfred Workflow の全体構成を記述したもの. Alfred によって自動的に生成される.
