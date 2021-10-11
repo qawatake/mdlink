@@ -1,5 +1,6 @@
 *
 !.gitignore
+!main.sh
 !main.go
 !go.mod
 !README.md
@@ -8,4 +9,7 @@
 !appscript/url_from_brave.scpt
 !appscript/url_from_chrome.scpt
 !appscript/url_from_safari.scpt
+!appscript/html_from_brave.scpt
+!appscript/html_from_chrome.scpt
+!appscript/html_from_safari.scpt
 !info.plist
