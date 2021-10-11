@@ -2,6 +2,7 @@
 !.gitignore
 !main.sh
 !main.go
+!entity.go
 !go.mod
 !README.md
 !appscript
