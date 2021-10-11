@@ -9,6 +9,7 @@
 - Brave Browser
 
 ## 使い方
+[![Image from Gyazo](https://i.gyazo.com/cd605c025e37027f7eb4e8181ac83565.gif)](https://gyazo.com/cd605c025e37027f7eb4e8181ac83565)
 1. Alfred の検索窓に `mdlink` と入力する.
 2. 実行した状況により, 動作は変わる
   - ブラウザを表示しながら実行した場合, 表示中のページのタイトルが表示される.
