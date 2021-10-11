@@ -3,16 +3,29 @@
 <plist version="1.0">
 <dict>
 	<key>bundleid</key>
-	<string>qawatake.url2mdlink</string>
+	<string>qawatake.mdlink</string>
 	<key>category</key>
 	<string>Productivity</string>
 	<key>connections</key>
 	<dict>
+		<key>6A173EF6-A284-498F-A4E9-2F17BFF6C638</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>33F85A1D-1BE8-4C01-B6B4-BCACB75904AB</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 		<key>94AB273B-3023-45E7-A7F6-2BC00758CB5B</key>
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>BEC8BA77-5281-42CF-8184-E34DE988B789</string>
+				<string>33F85A1D-1BE8-4C01-B6B4-BCACB75904AB</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -29,7 +42,7 @@
 	<key>disabled</key>
 	<false/>
 	<key>name</key>
-	<string>url2mdlink</string>
+	<string>mdlink</string>
 	<key>objects</key>
 	<array>
 		<dict>
@@ -48,7 +61,7 @@
 				<key>escaping</key>
 				<integer>102</integer>
 				<key>keyword</key>
-				<string>url2mdlink</string>
+				<string>mdlink</string>
 				<key>queuedelaycustom</key>
 				<integer>3</integer>
 				<key>queuedelayimmediatelyinitially</key>
@@ -60,19 +73,7 @@
 				<key>runningsubtext</key>
 				<string>Loading ...</string>
 				<key>script</key>
-				<string>front_app=$(osascript get_frontmost_appname.scpt)
-
-if [ "$front_app" = "Brave Browser.app" ]; then
-	url=$(osascript url_from_brave.scpt)
-fi
-if [ "$front_app" = "Google Chrome.app" ]; then
-	url=$(osascript url_from_chrome.scpt)
-fi
-if [ "$front_app" = "Safari.app" ]; then
-	url=$(osascript url_from_safari.scpt)
-fi
-
-./url2mdlink $url</string>
+				<string>runned=$((runned)) ./main.sh</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
@@ -80,7 +81,7 @@ fi
 				<key>subtext</key>
 				<string></string>
 				<key>title</key>
-				<string>url2mdlink - generate markdown link</string>
+				<string>mdlink: Generate md links</string>
 				<key>type</key>
 				<integer>0</integer>
 				<key>withspace</key>
@@ -108,7 +109,56 @@ fi
 			<key>type</key>
 			<string>alfred.workflow.output.clipboard</string>
 			<key>uid</key>
-			<string>BEC8BA77-5281-42CF-8184-E34DE988B789</string>
+			<string>33F85A1D-1BE8-4C01-B6B4-BCACB75904AB</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<true/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>2</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>keyword</key>
+				<string>mdlink</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Loading ...</string>
+				<key>script</key>
+				<string>./mdlink "" "" 0 $(pbpaste) ""</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string></string>
+				<key>title</key>
+				<string>mdlink: Generate md link from clipboard</string>
+				<key>type</key>
+				<integer>0</integer>
+				<key>withspace</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>6A173EF6-A284-498F-A4E9-2F17BFF6C638</string>
 			<key>version</key>
 			<integer>3</integer>
 		</dict>
@@ -117,19 +167,26 @@ fi
 	<string></string>
 	<key>uidata</key>
 	<dict>
+		<key>33F85A1D-1BE8-4C01-B6B4-BCACB75904AB</key>
+		<dict>
+			<key>xpos</key>
+			<integer>465</integer>
+			<key>ypos</key>
+			<integer>125</integer>
+		</dict>
+		<key>6A173EF6-A284-498F-A4E9-2F17BFF6C638</key>
+		<dict>
+			<key>xpos</key>
+			<integer>135</integer>
+			<key>ypos</key>
+			<integer>260</integer>
+		</dict>
 		<key>94AB273B-3023-45E7-A7F6-2BC00758CB5B</key>
 		<dict>
 			<key>xpos</key>
-			<integer>160</integer>
+			<integer>135</integer>
 			<key>ypos</key>
-			<integer>115</integer>
-		</dict>
-		<key>BEC8BA77-5281-42CF-8184-E34DE988B789</key>
-		<dict>
-			<key>xpos</key>
-			<integer>395</integer>
-			<key>ypos</key>
-			<integer>115</integer>
+			<integer>125</integer>
 		</dict>
 	</dict>
 	<key>webaddress</key>

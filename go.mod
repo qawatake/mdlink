@@ -1,4 +1,4 @@
-module github.com/qawatake/url2mdlink
+module github.com/qawatake/mdlink
 
 go 1.16
 

@@ -22,4 +22,4 @@ if [ "$front_app" = "$SAFARI"".app" ]; then
 fi
 
 clipboard=$(pbpaste)
-echo $html | ./url2mdlink "$url" "$source" "$runned" "$clipboard" "$html"
+echo $html | ./mdlink "$url" "$source" "$runned" "$clipboard" "$html"
