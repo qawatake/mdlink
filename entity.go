@@ -16,7 +16,10 @@ type TitleFinderImpl struct {
 type ScriptFilterOutput struct {
 	Rerun     float32 `json:"rerun"` // 再実行への待機時間. 再実行する場合に設定.
 	Variables struct {
-		Runned int `json:"runned"` // すでに実行した回数
+		Runned     int    `json:"runned"`       // すでに実行した回数
+		Browser    string `json:"browser"`      // ブラウザ名
+		BrowserURL string `json:"browserUrl"`   // ブラウザから取得した URL
+		Title      string `json:"browserTitle"` // ブラウザから取得した URL
 	} `json:"variables"`
 	Items []*ScriptFilterItem `json:"items"`
 }
