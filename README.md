@@ -15,7 +15,7 @@
   - そうでない場合, クリップボードにある URL をもとにして, 参照先のページのタイトルが表示される.
 4. エンターキーを押すと, 表示されたタイトルとページの URL を含むマークダウン用リンク (e.g., `[Google](https://www.google.com)` がクリップボードにコピーされる.
 
-[![Image from Gyazo](https://i.gyazo.com/cd605c025e37027f7eb4e8181ac83565.gif)](https://gyazo.com/cd605c025e37027f7eb4e8181ac83565)
+[![Image from Gyazo](https://i.gyazo.com/d1e9f97f64f9c365ceb1edb3562b66bd.gif)](https://gyazo.com/d1e9f97f64f9c365ceb1edb3562b66bd)
 
 ## インストール手順
 1. https://github.com/qawatake/mdlink/releases/latest から `mdlink.alfredworkflow` をダウンロード.
