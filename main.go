@@ -50,10 +50,21 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			f := new(TitleFinderImpl)
+
+			f, err := NewTitleFinderImpl(browserURL)
+			if err != nil {
+				log.Fatalf("NewTitleFinderImpl failed: %v", err)
+			}
 			f.FindPageTitle(doc)
-			item = NewScriptFilterItem(f.title, fmt.Sprintf("from %s", browser), fmt.Sprintf("[%v](%v)", f.title, browserURL), true)
-			browserTitle = f.title
+			f.FindFragment(doc)
+			var title string
+			if f.fragmentTitle != "" {
+				title = fmt.Sprintf("%s - %s", f.fragmentTitle, f.title)
+			} else {
+				title = f.title
+			}
+			item = NewScriptFilterItem(title, fmt.Sprintf("from %s", browser), fmt.Sprintf("[%v](%v)", title, browserURL), true)
+			browserTitle = title
 		}
 		output.addItem(item)
 	}
@@ -71,9 +82,19 @@ func main() {
 			log.Fatal(err)
 		}
 
-		f := new(TitleFinderImpl)
+		f, err := NewTitleFinderImpl(clipboard)
+		if err != nil {
+			log.Fatalf("NewTitleFinderImpl failed: %v", err)
+		}
+		f.FindFragment(doc)
 		f.FindPageTitle(doc)
-		item := NewScriptFilterItem(f.title, "from Clipboard", fmt.Sprintf("[%v](%v)", f.title, clipboard), true)
+		var title string
+		if f.fragmentTitle != "" {
+			title = fmt.Sprintf("%s - %s", f.fragmentTitle, f.title)
+		} else {
+			title = f.title
+		}
+		item := NewScriptFilterItem(title, "from Clipboard", fmt.Sprintf("[%v](%v)", title, clipboard), true)
 		output.addItem(item)
 	}
 
