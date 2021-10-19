@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net/url"
+	"strings"
+	"unicode"
 
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
@@ -14,9 +16,11 @@ type TitleFinder interface {
 }
 
 type TitleFinderImpl struct {
-	title         string
-	fragmentId    string
-	fragmentTitle string
+	title              string
+	fragmentId         string
+	fragmentTitle      string
+	fragmentTitleFound bool
+	titleFound         bool
 }
 
 type ScriptFilterOutput struct {
@@ -49,7 +53,7 @@ func NewTitleFinderImpl(rawurl string) (*TitleFinderImpl, error) {
 }
 
 func (f *TitleFinderImpl) FindFragment(n *html.Node) {
-	if f.fragmentTitle != "" {
+	if f.fragmentTitleFound {
 		return
 	}
 
@@ -57,7 +61,10 @@ func (f *TitleFinderImpl) FindFragment(n *html.Node) {
 	if n.Type == html.ElementNode && n.FirstChild != nil && n.FirstChild.Type == html.TextNode {
 		for _, a := range n.Attr {
 			if a.Key == "id" && a.Val == f.fragmentId {
-				f.fragmentTitle = n.FirstChild.Data
+				f.fragmentTitle = strings.TrimFunc(n.FirstChild.Data, func(r rune) bool {
+					return unicode.IsSpace(r)
+				})
+				f.fragmentTitleFound = true
 				return
 			}
 		}
@@ -69,13 +76,16 @@ func (f *TitleFinderImpl) FindFragment(n *html.Node) {
 }
 
 func (f *TitleFinderImpl) FindPageTitle(n *html.Node) {
-	if f.title != "" {
+	if f.titleFound {
 		return
 	}
 
 	// title タグを検索
 	if n.Type == html.ElementNode && n.DataAtom == atom.Title && n.FirstChild.Type == html.TextNode {
-		f.title = n.FirstChild.Data
+		f.title = strings.TrimFunc(n.FirstChild.Data, func(r rune) bool {
+			return unicode.IsSpace(r)
+		})
+		f.titleFound = true
 		return
 	}
 
