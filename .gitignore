@@ -6,13 +6,16 @@
 !main_test.go
 !go.mod
 !README.md
+!Makefile
 !appscript
 !appscript/frontmost_appname.scpt
 !appscript/url_from_brave.scpt
 !appscript/url_from_chrome.scpt
 !appscript/url_from_safari.scpt
+!appscript/url_from_vivaldi.scpt
 !appscript/html_from_brave.scpt
 !appscript/html_from_chrome.scpt
 !appscript/html_from_safari.scpt
+!appscript/html_from_vivaldi.scpt
 !info.plist
 !icon.png
