@@ -12,33 +12,13 @@ import (
 
 type TitleFinder interface {
 	FindPageTitle(n *html.Node)
-	FindFragment(n *html.Node)
+	FindFragmentTitle(n *html.Node)
 }
 
 type TitleFinderImpl struct {
-	title              string
-	fragmentId         string
-	fragmentTitle      string
-	fragmentTitleFound bool
-	titleFound         bool
-}
-
-type ScriptFilterOutput struct {
-	Rerun     float32 `json:"rerun"` // 再実行への待機時間. 再実行する場合に設定.
-	Variables struct {
-		Runned     int    `json:"runned"`       // すでに実行した回数
-		Browser    string `json:"browser"`      // ブラウザ名
-		BrowserURL string `json:"browserUrl"`   // ブラウザから取得した URL
-		Title      string `json:"browserTitle"` // ブラウザから取得した URL
-	} `json:"variables"`
-	Items []*ScriptFilterItem `json:"items"`
-}
-
-type ScriptFilterItem struct {
-	Title    string `json:"title"`
-	Subtitle string `json:"subtitle,omitempty"`
-	Arg      string `json:"arg"`
-	Valid    bool   `json:"valid,omitempty"`
+	title         string
+	fragmentId    string
+	fragmentTitle string
 }
 
 func NewTitleFinderImpl(rawurl string) (*TitleFinderImpl, error) {
@@ -52,31 +32,30 @@ func NewTitleFinderImpl(rawurl string) (*TitleFinderImpl, error) {
 	return f, nil
 }
 
-func (f *TitleFinderImpl) FindFragment(n *html.Node) {
-	if f.fragmentTitleFound {
+func (f *TitleFinderImpl) FindFragmentTitle(n *html.Node) {
+	if f.fragmentTitle != "" {
 		return
 	}
 
-	// 指定した id を含むタグを検索
+	// 指定した id を含むタグを検索
 	if n.Type == html.ElementNode && n.FirstChild != nil && n.FirstChild.Type == html.TextNode {
 		for _, a := range n.Attr {
 			if a.Key == "id" && a.Val == f.fragmentId {
 				f.fragmentTitle = strings.TrimFunc(n.FirstChild.Data, func(r rune) bool {
 					return unicode.IsSpace(r)
 				})
-				f.fragmentTitleFound = true
 				return
 			}
 		}
 	}
 
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		f.FindFragment(c)
+		f.FindFragmentTitle(c)
 	}
 }
 
 func (f *TitleFinderImpl) FindPageTitle(n *html.Node) {
-	if f.titleFound {
+	if f.title != "" {
 		return
 	}
 
@@ -85,7 +64,6 @@ func (f *TitleFinderImpl) FindPageTitle(n *html.Node) {
 		f.title = strings.TrimFunc(n.FirstChild.Data, func(r rune) bool {
 			return unicode.IsSpace(r)
 		})
-		f.titleFound = true
 		return
 	}
 
@@ -111,18 +89,4 @@ func (f *TitleFinderImpl) FindPageTitle(n *html.Node) {
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		f.FindPageTitle(c)
 	}
-}
-
-func NewScriptFilterItem(title string, subtitle string, arg string, valid bool) *ScriptFilterItem {
-	output := ScriptFilterItem{
-		Title:    title,
-		Subtitle: subtitle,
-		Arg:      arg,
-		Valid:    valid,
-	}
-	return &output
-}
-
-func (output *ScriptFilterOutput) addItem(item *ScriptFilterItem) {
-	output.Items = append(output.Items, item)
 }

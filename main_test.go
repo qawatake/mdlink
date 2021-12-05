@@ -42,7 +42,7 @@ func TestTitleFinderImpl(t *testing.T) {
 			t.Errorf("html.Parse failed: %v", err)
 		}
 		f.FindPageTitle(doc)
-		f.FindFragment(doc)
+		f.FindFragmentTitle(doc)
 
 		if gotPageTitle := f.title; gotPageTitle != tt.wantPageTitle {
 			t.Errorf("[ERROR] got: %q, want: %q", gotPageTitle, tt.wantPageTitle)

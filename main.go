@@ -1,15 +1,18 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/pkg/errors"
 
 	"golang.org/x/net/html"
 )
@@ -22,81 +25,36 @@ import (
 // 標準入力: ブラウザから取得した HTML のソース
 // 標準出力で Script Filter の JSON を出力 (https://www.alfredapp.com/help/workflows/inputs/script-filter/json/)
 func main() {
-	if len(os.Args) != 6 {
-		log.Fatal("引数の数が不正です")
-		return
+	if err := run(os.Args, os.Stdin, os.Stdout); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run(args []string, htmlfrom io.Reader, jsonto io.Writer) error {
+	if len(args) != 6 {
+		return fmt.Errorf("wrong number of args | want: %d, got: %d", 5, len(args)-1)
 	}
 
-	browserURL := strings.Trim(os.Args[1], "\n")
-	browser := os.Args[2]
+	browserURL := strings.Trim(args[1], "\n")
+	browser := args[2]
 	var runned int
-	if i, err := strconv.ParseInt(os.Args[3], 10, 32); err != nil {
-		log.Fatal(err)
+	if i, err := strconv.ParseInt(args[3], 10, 32); err != nil {
+		return errors.Wrap(err, "failed to parse int")
 	} else {
 		runned = int(i)
 	}
-	clipboard := os.Args[4]
-	browserTitle := os.Args[5]
+	clipboard := args[4]
+	browserTitle := args[5]
+	var htmlSource []byte
+	if browser != "" && runned < 1 {
+		var err error
+		htmlSource, err = io.ReadAll(htmlfrom)
+		if err != nil {
+			return errors.Wrap(err, "failed to read html source")
+		}
+	}
 
 	output := &ScriptFilterOutput{}
-
-	// ブラウザの内容を処理
-	if browser != "" {
-		var item *ScriptFilterItem
-		if runned >= 1 {
-			item = NewScriptFilterItem(browserTitle, fmt.Sprintf("from %s", browser), fmt.Sprintf("[%v](%v)", browserTitle, browserURL), true)
-		} else { // 初回起動 && ブラウザを開いている場合, ブラウザがトップページに開いている HTML を使用する
-			doc, err := html.Parse(os.Stdin)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			f, err := NewTitleFinderImpl(browserURL)
-			if err != nil {
-				log.Fatalf("NewTitleFinderImpl failed: %v", err)
-			}
-			f.FindPageTitle(doc)
-			f.FindFragment(doc)
-			var title string
-			if f.fragmentTitle != "" {
-				title = fmt.Sprintf("%s - %s", f.fragmentTitle, f.title)
-			} else {
-				title = f.title
-			}
-			item = NewScriptFilterItem(title, fmt.Sprintf("from %s", browser), fmt.Sprintf("[%v](%v)", title, browserURL), true)
-			browserTitle = title
-		}
-		output.addItem(item)
-	}
-
-	// クリップボードの内容を処理
-	// ブラウザを開いていない OR 2回目以降のコード実行の場合, クリップボード上の URL を使ってインターネットから HTML
-	if (browser == "" || runned >= 1) && isURL(clipboard) {
-		resp, err := http.Get(clipboard)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer resp.Body.Close()
-		doc, err := html.Parse(resp.Body)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		f, err := NewTitleFinderImpl(clipboard)
-		if err != nil {
-			log.Fatalf("NewTitleFinderImpl failed: %v", err)
-		}
-		f.FindFragment(doc)
-		f.FindPageTitle(doc)
-		var title string
-		if f.fragmentTitle != "" {
-			title = fmt.Sprintf("%s - %s", f.fragmentTitle, f.title)
-		} else {
-			title = f.title
-		}
-		item := NewScriptFilterItem(title, "from Clipboard", fmt.Sprintf("[%v](%v)", title, clipboard), true)
-		output.addItem(item)
-	}
 
 	// 再実行するかどうかを判定
 	// ブラウザを開いている & 初回の場合, クリップボード上の URL を使ってインターネットから HTML を取得しない
@@ -104,15 +62,54 @@ func main() {
 		output.Rerun = 0.1
 	}
 
+	// Script Filter の variables field を設定
 	output.Variables.Runned = int(runned) + 1
 	output.Variables.Browser = browser
 	output.Variables.BrowserURL = browserURL
-	output.Variables.Title = browserTitle
-
-	ec := json.NewEncoder(os.Stdout)
-	if err := ec.Encode(output); err != nil {
-		log.Fatal(err)
+	if browser != "" && runned < 1 {
+		pageTitle, fragmentTitle, err := getTitles(browserURL, bytes.NewReader(htmlSource))
+		if err != nil {
+			return errors.Wrap(err, "getTitles failed")
+		}
+		output.Variables.Title = buildTitle(pageTitle, fragmentTitle)
 	}
+
+	// <==== Script Filter の items field を設定
+	// ブラウザで処理済みの2回め
+	if browser != "" && runned >= 1 {
+		item := NewScriptFilterItem(browserTitle, fmt.Sprintf("from %s", browser), fmt.Sprintf("[%v](%v)", browserTitle, browserURL), true)
+		output.addItem(item)
+	}
+
+	// ブラウザの内容を処理
+	if browser != "" && runned < 1 {
+		item, err := handleBrowser(htmlSource, browserURL, browser)
+		if err != nil {
+			return errors.Wrap(err, "handleBrowser failed")
+		}
+		if item != nil {
+			output.addItem(item)
+		}
+	}
+
+	// クリップボードの内容を処理
+	// ブラウザを開いていない OR 2回目以降のコード実行の場合, クリップボード上の URL を使ってインターネットから HTML
+	if (browser == "" || runned >= 1) && isURL(clipboard) {
+		item, err := handleClipboard(clipboard)
+		if err != nil {
+			return errors.Wrap(err, "handleClipboard failed")
+		}
+		if item != nil {
+			output.addItem(item)
+		}
+	}
+	// <====
+
+	ec := json.NewEncoder(jsonto)
+	if err := ec.Encode(output); err != nil {
+		return errors.Wrap(err, "failed to encode json")
+	}
+	return nil
 }
 
 func isURL(s string) bool {
@@ -121,10 +118,51 @@ func isURL(s string) bool {
 		fmt.Fprint(os.Stderr, err)
 		return false
 	}
-	matched, _ := regexp.Match(`(http)|(https)(:\d+)?`, []byte(u.Scheme))
+	return u.Scheme == "http" || u.Scheme == "https"
+}
+
+func handleBrowser(htmlSource []byte, browserURL string, browser string) (*ScriptFilterItem, error) {
+	pageTitle, fragmentTitle, err := getTitles(browserURL, bytes.NewReader(htmlSource))
 	if err != nil {
-		fmt.Fprint(os.Stderr, err)
-		return false
+		return nil, errors.Wrap(err, "getTitles failed")
 	}
-	return matched
+	title := buildTitle(pageTitle, fragmentTitle)
+	return NewScriptFilterItem(title, fmt.Sprintf("from %s", browser), fmt.Sprintf("[%v](%v)", title, browserURL), true), nil
+}
+
+func handleClipboard(clipboard string) (*ScriptFilterItem, error) {
+	resp, err := http.Get(clipboard)
+	if err != nil {
+		return nil, errors.Wrap(err, "http get failed")
+	}
+	defer resp.Body.Close()
+	pageTitle, fragmentTitle, err := getTitles(clipboard, resp.Body)
+	if err != nil {
+		return nil, errors.Wrap(err, "getTitle failed")
+	}
+	title := buildTitle(pageTitle, fragmentTitle)
+	item := NewScriptFilterItem(title, "from Clipboard", fmt.Sprintf("[%v](%v)", title, clipboard), true)
+	return item, nil
+}
+
+func getTitles(urltxt string, htmlfrom io.Reader) (pageTitle, fragmentTitle string, err error) {
+	doc, err := html.Parse(htmlfrom)
+	if err != nil {
+		return "", "", errors.Wrap(err, "failed to parse html")
+	}
+
+	f, err := NewTitleFinderImpl(urltxt)
+	if err != nil {
+		return "", "", errors.Wrap(err, "NewTitleFinderImpl failed")
+	}
+	f.FindFragmentTitle(doc)
+	f.FindPageTitle(doc)
+	return f.title, f.fragmentTitle, nil
+}
+
+func buildTitle(pageTitle, fragmentTitle string) (title string) {
+	if fragmentTitle != "" {
+		return fmt.Sprintf("%s - %s", fragmentTitle, pageTitle)
+	}
+	return pageTitle
 }

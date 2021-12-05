@@ -2,7 +2,8 @@
 !.gitignore
 !main.sh
 !main.go
-!entity.go
+!titlefinder.go
+!jsonentity.go
 !main_test.go
 !go.mod
 !README.md
