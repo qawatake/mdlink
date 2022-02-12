@@ -14,9 +14,11 @@
 !appscript/url_from_chrome.scpt
 !appscript/url_from_safari.scpt
 !appscript/url_from_vivaldi.scpt
+!appscript/url_from_sidekick.scpt
 !appscript/html_from_brave.scpt
 !appscript/html_from_chrome.scpt
 !appscript/html_from_safari.scpt
 !appscript/html_from_vivaldi.scpt
+!appscript/html_from_sidekick.scpt
 !info.plist
 !icon.png

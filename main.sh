@@ -3,6 +3,7 @@ BRAVE="Brave Browser"
 CHROME="Google Chrome"
 SAFARI="Safari"
 VIVALDI="Vivaldi"
+SIDEKICK="Sidekick"
 
 # 2回め以降の動作
 # ブラウザが最前面にある場合には, 初回実行時にはクリップボードの内容を処理しない
@@ -32,6 +33,10 @@ case "$front_app" in
 	"$VIVALDI"".app")
 		browserurl=$(osascript appscript/url_from_vivaldi.scpt)
 		osascript appscript/html_from_vivaldi.scpt | ./mdlink "$browserurl" "$VIVALDI" "$runned" "$clipboard" ""
+		;;
+	"$SIDEKICK"".app")
+		browserurl=$(osascript appscript/url_from_sidekick.scpt)
+		osascript appscript/html_from_sidekick.scpt | ./mdlink "$browserurl" "$SIDEKICK" "$runned" "$clipboard" ""
 		;;
 	*)
 		osascript appscript/html_from_safari.scpt | ./mdlink "" "" "$runned" "$clipboard" ""
