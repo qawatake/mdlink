@@ -8,6 +8,7 @@
 - Google Chrome
 - Brave Browser
 - Vivaldi
+- Sidekick
 
 ## 使い方
 1. Alfred の検索窓に `mdlink` と入力する.
